@@ -11,16 +11,24 @@ except ImportError:
 
 def getAuthFromFile(file):
     if os.path.isfile(file):
-        with open(file) as f:
-            return str(f.readline().replace('\n', ''))
+        list = []
+        f = open(file, 'r')
+        for line in f:
+            list.append(line.replace('\n', ''))
+        return list
     else:
         print('ERROR! '+ file + ' doesn\'t exist!')
         sys.exit(1)
 
 def getJSON(url, auth):
-    req = urllib.request.Request(url)
-    req.add_header('Authorization', auth)
-    return json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+    n = 0
+    while n < len(auth):
+        req = urllib.request.Request(url)
+        req.add_header('Authorization', auth[n])
+        try:
+            return json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        except:
+            n = n + 1
 
 def pYellow(txt):
     print(colored(txt, 'yellow', attrs=['bold']))
@@ -43,11 +51,11 @@ def main():
     search   = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0/search?q=' + str(word)
     suggest  = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0/suggest?q=' + str(word)
     authfile = os.path.dirname(__file__) + '/auth.conf'
-    auth     = getAuthFromFile(authfile)
-    rawjson  = getJSON(search, auth)
+    tokens   = getAuthFromFile(authfile)
+    rawjson  = getJSON(search, tokens)
 
     if 'Dictionary' not in rawjson.keys():
-        suggestjson = getJSON(suggest, auth)
+        suggestjson = getJSON(suggest, tokens)
         pBlue('Suggestion: ' + ', '.join(suggestjson[0]['values']))
 
     else:

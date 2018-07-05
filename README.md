@@ -11,7 +11,7 @@ ludwig-cli
 [Ludwig](https://ludwig.guru/) is a linguistic search engine. It's a script to fetch search results from Ludwig and show them in your favorite terminal.
 
 ### Requirement
-An authorization key is required. Please find it somewhere from Ludwig and put it inside **auth.conf** file.
+An authorization key is required. Please find it somewhere from Ludwig and put it inside **auth.conf** file. One token one line.
 
 ### How to use
 ```
