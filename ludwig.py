@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os, sys, re, json
 import urllib.request
+from random import shuffle
 
 try:
     from termcolor import colored
@@ -21,7 +22,9 @@ def getAuthFromFile(file):
         sys.exit(1)
 
 def getJSON(url, auth):
+    shuffle(auth)
     n = 0
+
     while n < len(auth):
         req = urllib.request.Request(url)
         req.add_header('Authorization', auth[n])
