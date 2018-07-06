@@ -32,6 +32,8 @@ def getJSON(url, auth):
             return json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
         except:
             n = n + 1
+    print('ERROR! No available token!')
+    sys.exit(1)
 
 def pYellow(txt):
     print(colored(txt, 'yellow', attrs=['bold']))
