@@ -4,10 +4,8 @@ import os, sys, re, json
 import urllib.request
 from random import shuffle
 
-try:
-    from termcolor import colored
-except ImportError:
-    print('termcolor is not installed. Please pip install termcolor')
+def showErrorAndExit(txt):
+    print('ERROR! ' + txt)
     sys.exit(1)
 
 def getAuthFromFile(file):
@@ -18,13 +16,11 @@ def getAuthFromFile(file):
             list.append(line.replace('\n', ''))
         return list
     else:
-        print('ERROR! '+ file + ' doesn\'t exist!')
-        sys.exit(1)
+        showErrorAndExit(file + ' doesn\'t exist!')
 
 def getJSON(url, auth):
     shuffle(auth)
     n = 0
-
     while n < len(auth):
         req = urllib.request.Request(url)
         req.add_header('Authorization', auth[n])
@@ -32,8 +28,7 @@ def getJSON(url, auth):
             return json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
         except:
             n = n + 1
-    print('ERROR! No available token!')
-    sys.exit(1)
+    showErrorAndExit('No available token!')
 
 def pYellow(txt):
     print(colored(txt, 'yellow', attrs=['bold']))
@@ -44,17 +39,13 @@ def pGreen(txt):
 def pBlue(txt):
     print(colored(txt, 'blue'))
 
-def checkInput(var):
-    if(len(var) != 2):
-        print('<word> is missing: ./ludwig.sh <word>')
-        sys.exit(1)
-
 def main():
-    checkInput(sys.argv)
+    if (len(sys.argv) != 2): showErrorAndExit('<word> is missing: ./ludwig.py <word>')
 
     word     = sys.argv[1]
-    search   = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0/search?q=' + str(word)
-    suggest  = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0/suggest?q=' + str(word)
+    url      = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0'
+    search   = url + '/search?q=' + str(word)
+    suggest  = url + '/suggest?q=' + str(word)
     authfile = os.path.dirname(__file__) + '/auth.conf'
     tokens   = getAuthFromFile(authfile)
     rawjson  = getJSON(search, tokens)
@@ -62,7 +53,6 @@ def main():
     if 'Dictionary' not in rawjson.keys():
         suggestjson = getJSON(suggest, tokens)
         pBlue('Suggestion: ' + ', '.join(suggestjson[0]['values']))
-
     else:
         for definition in rawjson['Dictionary']['posDefinition']:
             pYellow(definition['posType'])
@@ -83,4 +73,9 @@ def main():
             print("\n")
 
 if __name__ == '__main__':
+    try:
+        from termcolor import colored
+    except ImportError:
+        showErrorAndExit('termcolor is not installed. Please pip install termcolor')
+
     main()
