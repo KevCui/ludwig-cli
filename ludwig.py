@@ -18,7 +18,14 @@ def getAuthFromFile(file):
     else:
         showErrorAndExit(file + ' doesn\'t exist!')
 
+def writeToFile(file, token):
+    f = open(file, "w+")
+    f.write(token)
+    f.close()
+
 def getJSON(url, auth):
+    badauth = os.path.dirname(__file__) + '/badauth.conf'
+
     shuffle(auth)
     n = 0
     while n < len(auth):
@@ -27,6 +34,7 @@ def getJSON(url, auth):
         try:
             return json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
         except:
+            writeToFile(badauth, auth[n])
             n = n + 1
     showErrorAndExit('No available token!')
 
