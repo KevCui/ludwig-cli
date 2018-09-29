@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os, sys, re, json
+import os
+import sys
+import json
 import urllib.request
 from random import shuffle
+
 
 def showErrorAndExit(txt):
     print('ERROR! ' + txt)
     sys.exit(1)
+
 
 def getAuthFromFile(file):
     if os.path.isfile(file):
@@ -18,10 +22,12 @@ def getAuthFromFile(file):
     else:
         showErrorAndExit(file + ' doesn\'t exist!')
 
+
 def writeToFile(file, token):
     f = open(file, "w+")
     f.write(token)
     f.close()
+
 
 def getJSON(url, auth):
     badauth = os.path.dirname(__file__) + '/badauth.conf'
@@ -38,25 +44,30 @@ def getJSON(url, auth):
             n = n + 1
     showErrorAndExit('No available token!')
 
+
 def pYellow(txt):
     print(colored(txt, 'yellow', attrs=['bold']))
+
 
 def pGreen(txt):
     print(colored(txt, 'green'))
 
+
 def pBlue(txt):
     print(colored(txt, 'blue'))
 
-def main():
-    if (len(sys.argv) != 2): showErrorAndExit('<word> is missing: ./ludwig.py <word>')
 
-    word     = sys.argv[1]
-    url      = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0'
-    search   = url + '/search?q=' + str(word)
-    suggest  = url + '/suggest?q=' + str(word)
+def main():
+    if (len(sys.argv) != 2):
+        showErrorAndExit('<word> is missing: ./ludwig.py <word>')
+
+    word = sys.argv[1]
+    url = 'https://api.ludwig.guru/ludwig-authentication-manager/rest/v1.0'
+    search = url + '/search?q=' + str(word)
+    suggest = url + '/suggest?q=' + str(word)
     authfile = os.path.dirname(__file__) + '/auth.conf'
-    tokens   = getAuthFromFile(authfile)
-    rawjson  = getJSON(search, tokens)
+    tokens = getAuthFromFile(authfile)
+    rawjson = getJSON(search, tokens)
 
     if 'Dictionary' not in rawjson.keys():
         suggestjson = getJSON(suggest, tokens)
@@ -80,10 +91,12 @@ def main():
                 pass
             print("\n")
 
+
 if __name__ == '__main__':
     try:
         from termcolor import colored
     except ImportError:
-        showErrorAndExit('termcolor is not installed. Please pip install termcolor')
+        showErrorAndExit(
+            'termcolor is not installed. Please pip install termcolor')
 
     main()
